@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SelfScope</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="selfscope-logo.png" type="image/png">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#4aa3a3;
+      --primary-dark:#2c7c7c;
+      --accent:#e0f7f7;
+      --bg:#f7f9f9;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: var(--bg);
+      color: #044b4b;
+      margin:0;
+    }
+
+    header {
+      background: linear-gradient(180deg,var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      padding: 20px 16px;
+      text-align: center;
+    }
+
+    #logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 10px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent);
+      box-shadow: 0 5px 18px rgba(0,0,0,0.12);
+    }
+
+    #logo img{
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+    }
+
+    h1{
+      font-size: 28px;
+      margin: 0 0 6px;
+    }
+
+    p.lead{
+      margin:0;
+      opacity:0.9;
+    }
+
+    .container{
+      max-width: 900px;
+      padding:20px 10px;
+    }
+
+    .problems-grid{
+      display:grid;
+      grid-template-columns:repeat(1,1fr);
+      gap:12px;
+      margin:18px auto;
+    }
+
+    @media(min-width:576px){ .problems-grid{ grid-template-columns:repeat(2,1fr); } }
+    @media(min-width:900px){ .problems-grid{ grid-template-columns:repeat(3,1fr); } }
+
+    .problem-btn{
+      width:100%;
+      padding:14px 18px;
+      border-radius:12px;
+      font-size:16px;
+      border:none;
+      color:#fff;
+      background:linear-gradient(135deg,var(--primary) 0%, var(--primary-dark) 100%);
+      box-shadow:0 6px 20px rgba(21,143,149,0.14);
+      transition: transform .16s, box-shadow .16s;
+    }
+
+    .problem-btn:hover{
+      transform:translateY(-3px);
+      box-shadow:0 16px 36px rgba(15,107,114,0.16);
+    }
+
+    .question-card{
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 6px 25px rgba(0,0,0,0.06);
+      margin-top:20px;
+    }
+
+    .answers .btn{
+      margin:8px 6px 0 6px;
+      padding:10px 18px;
+      border-radius:999px;
+    }
+
+    .progress{
+      height:10px;
+      background:var(--accent);
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:12px;
+    }
+
+    .progress-bar{
+      transition:width .32s ease;
+    }
+
+    .result{
+      margin-top:14px;
+      font-weight:700;
+      font-size:16px;
+    }
+
+    .result.low{ color:#2e7d32; }
+    .result.medium{ color:#ef6c00; }
+    .result.high{ color:#c62828; }
+
+    #back-btn{
+      margin-bottom:10px;
+      background:#ccc;
+      color:#333;
+    }
+
+    footer{
+      text-align:center;
+      padding:18px 8px;
+      color:var(--primary-dark);
+      opacity:0.9;
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="logo">
+    <img src="selfscope-logo.png" alt="SelfScope Logo">
+  </div>
+  <h1>SelfScope</h1>
+  <p class="lead">اكتشف صحتك النفسية، واختر الفحص الذي يناسبك</p>
+</header>
+
+<div class="container" id="main-menu">
+  <div class="problems-grid">
+    <button class="btn problem-btn" onclick="startQuiz('الاكتئاب')">الاكتئاب</button>
+    <button class="btn problem-btn" onclick="startQuiz('القلق')">القلق</button>
+    <button class="btn problem-btn" onclick="startQuiz('التوتر')">التوتر</button>
+    <button class="btn problem-btn" onclick="startQuiz('اضطرابات النوم')">اضطرابات النوم</button>
+    <button class="btn problem-btn" onclick="startQuiz('اضطرابات الشخصية')">اضطرابات الشخصية</button>
+    <button class="btn problem-btn" onclick="startQuiz('الوسواس القهري')">الوسواس القهري</button>
+    <button class="btn problem-btn" onclick="startQuiz('الانطواء الاجتماعي')">الانطواء الاجتماعي</button>
+    <button class="btn problem-btn" onclick="startQuiz('فقدان الشهية / الإفراط في الطعام')">فقدان الشهية / الإفراط في الطعام</button>
+    <button class="btn problem-btn" onclick="startQuiz('الهلع / الخوف المرضي')">الهلع / الخوف المرضي</button>
+    <button class="btn problem-btn" onclick="startQuiz('متلازمة جوسكا')">متلازمة جوسكا</button>
+  </div>
+</div>
+
+<div class="container mt-4" id="quiz-container" style="display:none; max-width:880px;">
+  <button id="back-btn" class="btn" onclick="backToMenu()">الرجوع للقائمة الرئيسية</button>
+  <div class="question-card">
+    <div id="question-text" style="font-size:18px; font-weight:600"></div>
+    <div class="answers mt-3">
+      <button class="btn btn-outline-success" onclick="answer(1)">نعم</button>
+      <button class="btn btn-outline-secondary" onclick="answer(0)">لا</button>
+      <button class="btn btn-outline-primary" onclick="answer(0.5)">أحيانًا</button>
+    </div>
+    <div class="progress"><div class="progress-bar bg-success" id="progress" role="progressbar" style="width:0%"></div></div>
+    <div class="result" id="result"></div>
+    <button id="restart-btn" class="btn btn-secondary mt-3" style="display:none" onclick="restart()">إعادة الاختبار</button>
+  </div>
+</div>
+
+<footer>&copy; <span id="year"></span> SelfScope</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById('year').innerText = new Date().getFullYear();
+
+const questionsDB = {
+  "الاكتئاب":["هل تشعر بالحزن معظم الوقت؟","هل فقدت الاهتمام بالأشياء التي كنت تستمتع بها؟","هل تشعر باليأس؟","هل تواجه صعوبة في النوم؟","هل تشعر بالتعب والإرهاق دائمًا؟","هل تفكر في الأمور السلبية باستمرار؟","هل تعاني من فقدان الشهية أو الإفراط في الطعام؟","هل تجد صعوبة في التركيز؟","هل تشعر بالذنب أو النقد الذاتي؟","هل فقدت الطاقة لأداء الأنشطة اليومية؟"],
+  "القلق":["هل تشعر بالتوتر معظم الوقت؟","هل تواجه صعوبة في الاسترخاء؟","هل تشعر بالخوف المستمر؟","هل تجد صعوبة في التركيز بسبب القلق؟","هل تتوتر عند المواقف الاجتماعية؟","هل تعاني من خفقان أو تعرق غير مفسر؟","هل تشعر بالارتباك بسهولة؟","هل تجد صعوبة في النوم بسبب القلق؟","هل تشعر بالقلق حول المستقبل؟","هل تتجنب مواقف معينة بسبب الخوف؟"],
+  "التوتر":["هل تشعر بالضغط النفسي باستمرار؟","هل تواجه صعوبة في إدارة وقتك؟","هل تشعر بالإرهاق بسهولة؟","هل تجد صعوبة في التركيز؟","هل تشعر بالتوتر عند مواقف بسيطة؟","هل تتأثر عواطفك بسرعة؟","هل تواجه صعوبة في النوم؟","هل تشعر بالألم الجسدي عند التوتر؟","هل تميل للمبالغة في ردود الفعل؟","هل تحتاج لفترات استراحة قصيرة باستمرار؟"],
+  "اضطرابات النوم":["هل تجد صعوبة في النوم؟","هل تستيقظ كثيرًا أثناء الليل؟","هل تشعر بالتعب عند الاستيقاظ؟","هل تأخذ قيلولات طويلة؟","هل تواجه أحلامًا مزعجة؟","هل تشعر بالنعاس أثناء النهار؟","هل تستخدم الهاتف قبل النوم؟","هل تشرب كافيين كثيرًا؟","هل تجد صعوبة في الاسترخاء قبل النوم؟","هل تتجنب روتين النوم المنتظم؟"],
+  "اضطرابات الشخصية":["هل تواجه صعوبة في التعامل مع الآخرين؟","هل تتأثر بسهولة بمواقف بسيطة؟","هل تجد صعوبة في الحفاظ على علاقات طويلة الأمد؟","هل تميل للتفكير المبالغ فيه؟","هل تواجه صعوبة في التعبير عن مشاعرك؟","هل تشعر بالغيرة أو الحسد بشكل مفرط؟","هل تميل للانطواء أو الانعزال؟","هل تجد صعوبة في اتخاذ القرارات؟","هل تتصرف بعشوائية أحيانًا؟","هل تتجنب المواقف الاجتماعية؟"],
+  "الوسواس القهري":["هل تشعر بالحاجة لتكرار أفعالك؟","هل تخاف من الأوساخ أو الجراثيم؟","هل تكرر الأفكار بشكل مستمر؟","هل تجد صعوبة في التخلص من الأشياء؟","هل تمارس طقوسًا محددة؟","هل تشعر بالقلق إذا لم تقم بعمل معين؟","هل تؤثر الأفكار على حياتك اليومية؟","هل تحاول التحكم في كل شيء؟","هل تجد صعوبة في الراحة؟","هل تتجنب مواقف معينة بسبب الوسواس؟"],
+  "الانطواء الاجتماعي":["هل تتجنب المواقف الاجتماعية؟","هل تشعر بعدم الراحة في المجموعات؟","هل تجد صعوبة في بدء محادثات؟","هل تشعر بالخجل المستمر؟","هل تفضل البقاء وحدك؟","هل تتجنب التواصل مع الغرباء؟","هل تجد صعوبة في التعبير عن رأيك؟","هل تشعر بالتوتر عند التفاعل مع الآخرين؟","هل تفضل البقاء في المنزل؟","هل تقلل من قيمتك أمام الآخرين؟"],
+  "فقدان الشهية / الإفراط في الطعام":["هل تفقد الشهية غالبًا؟","هل تتناول كميات كبيرة من الطعام؟","هل تشعر بالذنب بعد الأكل؟","هل تمارس حميات صارمة؟","هل تجد صعوبة في التحكم بالأكل؟","هل تأكل بسرعة؟","هل تتجنب الأطعمة أحيانًا؟","هل تميل للأكل العاطفي؟","هل تواجه مشاكل في الوزن؟","هل تفكر بشكل مفرط في الطعام؟"],
+  "الهلع / الخوف المرضي":["هل تشعر بنوبات مفاجئة من الخوف؟","هل تعاني من خفقان أو تعرق مفاجئ؟","هل تواجه صعوبة في التنفس عند التوتر؟","هل تخاف من أماكن معينة؟","هل تتجنب مواقف معينة خوفًا من النوبات؟","هل تشعر بالخوف المستمر؟","هل تواجه صعوبة في التركيز أثناء النوبات؟","هل تتوتر بسرعة؟","هل تحاول السيطرة على الخوف؟","هل تؤثر هذه الأعراض على حياتك اليومية؟"],
+  "متلازمة جوسكا":["هل تشعر بالحاجة للسيطرة على كل الأمور؟","هل تميل للمبالغة في التفكير في التفاصيل؟","هل تجد صعوبة في قبول النصائح من الآخرين؟","هل تشعر بالضغط النفسي عند الفوضى؟","هل تكرر أفعالك أو خطواتك بشكل مفرط؟","هل تخاف من ارتكاب الأخطاء؟","هل تشعر بالتوتر عند عدم التخطيط لكل شيء؟","هل تميل لمقارنة نفسك بالآخرين باستمرار؟","هل تشعر بالعجز عند عدم الوصول للكمال؟","هل تؤثر هذه الأعراض على حياتك اليومية؟"]
+};
+
+let currentQuestion = 0, score = 0, selectedQuiz = '';
+
+function startQuiz(quizName){
+  selectedQuiz = quizName;
+  currentQuestion = 0;
+  score = 0;
+  document.getElementById('main-menu').style.display = 'none';
+  document.getElementById('quiz-container').style.display = 'block';
+  document.getElementById('result').innerText = '';
+  document.getElementById('restart-btn').style.display = 'none';
+  showQuestion();
+}
+
+function showQuestion(){
+  const q = questionsDB[selectedQuiz][currentQuestion];
+  document.getElementById('question-text').innerText = `السؤال ${currentQuestion+1}: ${q}`;
+  const progressPercent = Math.round((currentQuestion / questionsDB[selectedQuiz].length) * 100);
+  document.getElementById('progress').style.width = progressPercent + '%';
+}
+
+function answer(value){
+  score += value;
+  currentQuestion++;
+  if(currentQuestion < questionsDB[selectedQuiz].length){
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult(){
+  const totalQuestions = questionsDB[selectedQuiz].length;
+  const percentage = Math.round((score/totalQuestions)*100);
+  let advice='', level='';
+  if(percentage < 40){ level='low'; advice='وضعك النفسي مستقر.'; }
+  else if(percentage<70){ level='medium'; advice='حاول الانتباه لصحتك النفسية وممارسة تمارين الاسترخاء.'; }
+  else { level='high'; advice='ننصحك باستشارة أخصائي نفسي للحصول على الدعم المناسب.'; }
+
+  document.getElementById('result').innerHTML = `نتيجة ${selectedQuiz}: ${percentage}%<br>${advice}`;
+  document.getElementById('result').className = `result ${level}`;
+  document.getElementById('progress').style.width = '100%';
+  document.getElementById('restart-btn').style.display='inline-block';
+}
+
+function restart(){
+  document.getElementById('quiz-container').style.display='none';
+  document.getElementById('main-menu').style.display='block';
+}
+
+function backToMenu(){
+  if(confirm("هل تريد الرجوع للقائمة الرئيسية؟ سيتم فقد التقدم الحالي.")){
+    document.getElementById('quiz-container').style.display='none';
+    document.getElementById('main-menu').style.display='block';
+  }
+}
+</script>
+
+</body>
+</html>
