@@ -6,7 +6,7 @@
 <title>SelfScope</title>
 
 <!-- Favicon -->
-<link rel="icon" href="selfscope-logo.png" type="image/png">
+<link rel="icon" href="selfscope-logo.png" type="image/png" >
 
 <!-- Bootstrap 5 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,9 +22,10 @@
   --header-gradient: linear-gradient(135deg, #61c9f6, #36bafc);
   --card-gradient: linear-gradient(135deg, #E0F4FA, #F5F5F5);
   --btn-gradient: linear-gradient(135deg, #81C7F5, #5DADE2);
-  --bg: #FAFAFA;
-  --accent: #8dccf8;
-  --text-dark: #044b4b;
+  --progress-color: #20adf4;
+  --bg:#f7f9f9;
+  --accent:#7ce0ff;
+  --text-dark:#044b4b;
 }
 
 body {
@@ -143,6 +144,7 @@ p.lead{
 
 .progress-bar{
   transition:width .32s ease;
+  background-color: var(--progress-color);
 }
 
 .result{
@@ -151,9 +153,9 @@ p.lead{
   font-size:16px;
 }
 
-.result.low{ color:#1565c0; }
-.result.medium{ color:#0277bd; }
-.result.high{ color:#004c8c; }
+.result.low{ color:#36bafc; }
+.result.medium{ color:#ff9a3c; }
+.result.high{ color:#cb112d; }
 
 #back-btn{
   margin-bottom:10px;
@@ -199,11 +201,11 @@ footer{
   <div class="question-card">
     <div id="question-text" style="font-size:18px; font-weight:600"></div>
     <div class="answers mt-3">
-      <button class="btn btn-outline-primary" onclick="answer(1)">نعم</button>
-      <button class="btn btn-outline-secondary" onclick="answer(0)">لا</button>
-      <button class="btn btn-outline-info" onclick="answer(0.5)">أحيانًا</button>
+      <button type="button" class="btn btn-success" onclick="answer(1)">نعم</button>
+      <button type="button" class="btn btn-secondary" onclick="answer(0)">لا</button>
+      <button type="button" class="btn btn-primary" onclick="answer(0.5)">أحيانًا</button>
     </div>
-    <div class="progress"><div class="progress-bar bg-primary" id="progress" role="progressbar" style="width:0%"></div></div>
+    <div class="progress"><div class="progress-bar" id="progress" role="progressbar" style="width:0%"></div></div>
     <div class="result" id="result"></div>
     <button id="restart-btn" class="btn btn-secondary mt-3" style="display:none" onclick="restart()">إعادة الاختبار</button>
   </div>
@@ -214,6 +216,19 @@ footer{
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.getElementById('year').innerText = new Date().getFullYear();
+
+const adviceDB = {
+  "الاكتئاب":"حاول ممارسة النشاط البدني يوميًا، تحدث مع صديق موثوق، وخصص وقتًا لهواياتك.",
+  "القلق":"جرب تمارين التنفس العميق، التأمل، وتقليل الكافيين، وحدد وقت للراحة.",
+  "التوتر":"قم بتمارين الاسترخاء، قسم مهامك لأجزاء صغيرة، واحرص على النوم الكافي.",
+  "اضطرابات النوم":"حافظ على روتين نوم ثابت، تجنب الهاتف قبل النوم، وقلل الكافيين.",
+  "اضطرابات الشخصية":"تواصل مع مستشار نفسي، حاول فهم مشاعرك، وكن صريحًا مع نفسك.",
+  "الوسواس القهري":"حاول مواجهة مخاوفك تدريجيًا، استخدم تمارين الاسترخاء، واطلب الدعم عند الحاجة.",
+  "الانطواء الاجتماعي":"ابدأ بخطوات صغيرة للتواصل الاجتماعي، وتحدث مع أشخاص موثوقين.",
+  "فقدان الشهية / الإفراط في الطعام":"اعمل على تنظيم وجباتك، وتحدث مع مختص تغذية أو نفسي.",
+  "الهلع / الخوف المرضي":"تعلم تقنيات التنفس والتحكم بالنفس، وتجنب المحفزات بشكل تدريجي.",
+  "متلازمة جوسكا":"تعلم الاسترخاء، نظم وقتك، وحاول تقبل عدم الكمال."
+};
 
 const questionsDB = {
   "الاكتئاب":["هل تشعر بالحزن معظم الوقت؟","هل فقدت الاهتمام بالأشياء التي كنت تستمتع بها؟","هل تشعر باليأس؟","هل تواجه صعوبة في النوم؟","هل تشعر بالتعب والإرهاق دائمًا؟","هل تفكر في الأمور السلبية باستمرار؟","هل تعاني من فقدان الشهية أو الإفراط في الطعام؟","هل تجد صعوبة في التركيز؟","هل تشعر بالذنب أو النقد الذاتي؟","هل فقدت الطاقة لأداء الأنشطة اليومية؟"],
@@ -261,11 +276,11 @@ function answer(value){
 function showResult(){
   const totalQuestions = questionsDB[selectedQuiz].length;
   const percentage = Math.round((score/totalQuestions)*100);
-  let advice='', level='';
-
-  if(percentage < 40){ level='low'; advice='وضعك النفسي مستقر.'; }
-  else if(percentage<70){ level='medium'; advice='حاول الانتباه لصحتك النفسية وممارسة تمارين الاسترخاء.'; }
-  else { level='high'; advice='ننصحك باستشارة أخصائي نفسي للحصول على الدعم المناسب.'; }
+  let advice = adviceDB[selectedQuiz];
+  let level = '';
+  if(percentage < 40){ level='low'; }
+  else if(percentage<70){ level='medium'; }
+  else { level='high'; }
 
   document.getElementById('result').innerHTML = `نتيجة ${selectedQuiz}: ${percentage}%<br>${advice}`;
   document.getElementById('result').className = `result ${level}`;
